@@ -1,0 +1,14 @@
+#=============================#
+# Neural Network Truth Table  #
+#=============================#
+
+# Format (repeat for each test case):
+# <input_1> <input_2> <input_n> | <output_1> <output_2> <output_n>
+
+# if loading inputs/outputs from an external file, use the following format:
+# ?inputfile.txt | ?outputfile.txt
+
+?../TruthTables/ExternalDataFiles/textTestFile.txt | 0.0 0.0 0.0
+0.0 1.0 | 0.0 1.0 1.0
+1.0 0.0 | 0.0 1.0 1.0
+1.0 1.0 | 1.0 1.0 0.0
