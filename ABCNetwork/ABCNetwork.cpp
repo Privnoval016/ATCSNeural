@@ -27,7 +27,7 @@ using namespace std;
 #define DIVIDER "------------------------------------------------------------------------------\n"
 
 #define NUM_IN_ACT         2
-#define NUM_HID_ACT        5
+#define NUM_HID_ACT        100
 #define NUM_OUT_ACT        3
 
 #define TRAINING_NETWORK   true
@@ -43,7 +43,7 @@ using namespace std;
 #define LAMBDA             0.3
 
 #define HI_RANGE           (1.5)
-#define LOW_RANGE          (-1.5)
+#define LOW_RANGE          (0.1)
 
 #define MAX_ITERATIONS     1e5
 #define AVG_ERROR          2e-4
@@ -610,7 +610,7 @@ void trainNetwork()
          avgError += error;
       } // for (curTestCase = 0; curTestCase < numTrainingSets; ++curTestCase)
 
-      avgError /= numTrainingSets;
+      avgError /= static_cast<double>(numTrainingSets);
 
    } // while (avgError > avgErrCut && curIterations < maxIterations)
 

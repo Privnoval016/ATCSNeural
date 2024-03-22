@@ -4,4 +4,4 @@ project(ABCBackprop)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ABCBackprop ABCBackprop.cpp
-        fileparser.h)
+        Parser.cpp)

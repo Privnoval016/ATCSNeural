@@ -55,6 +55,12 @@ build CMakeFiles/ABCBackprop.dir/ABCBackprop.cpp.o: CXX_COMPILER__ABCBackprop_un
   OBJECT_DIR = CMakeFiles/ABCBackprop.dir
   OBJECT_FILE_DIR = CMakeFiles/ABCBackprop.dir
 
+build CMakeFiles/ABCBackprop.dir/Parser.cpp.o: CXX_COMPILER__ABCBackprop_unscanned_Debug /Users/pranavsukesh/Documents/GitHub/ATCSNeural/ABCBackprop/Parser.cpp || cmake_object_order_depends_target_ABCBackprop
+  DEP_FILE = CMakeFiles/ABCBackprop.dir/Parser.cpp.o.d
+  FLAGS = -g -std=gnu++17 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/ABCBackprop.dir
+  OBJECT_FILE_DIR = CMakeFiles/ABCBackprop.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target ABCBackprop
@@ -63,7 +69,7 @@ build CMakeFiles/ABCBackprop.dir/ABCBackprop.cpp.o: CXX_COMPILER__ABCBackprop_un
 #############################################
 # Link the executable ABCBackprop
 
-build ABCBackprop: CXX_EXECUTABLE_LINKER__ABCBackprop_Debug CMakeFiles/ABCBackprop.dir/ABCBackprop.cpp.o
+build ABCBackprop: CXX_EXECUTABLE_LINKER__ABCBackprop_Debug CMakeFiles/ABCBackprop.dir/ABCBackprop.cpp.o CMakeFiles/ABCBackprop.dir/Parser.cpp.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   OBJECT_DIR = CMakeFiles/ABCBackprop.dir
   POST_BUILD = :

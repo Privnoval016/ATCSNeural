@@ -1,0 +1,72 @@
+#=============================#
+# Neural Network Config File  #
+#=============================#
+
+# This file configures the neural network to load weights and run (modify layer size as needed)
+#===============================================================================#
+# General Parameters
+
+# runtime mode; 0: run and print truth table, 1: train and print truth table
+$RUN_MODE 0
+
+# loading weights; 0: no, 1: yes (if yes, file to load weights from must be provided, if no, random weights are generated)
+$LOAD_WEIGHTS 1
+
+# saving weights; 0: no, 1: yes (if yes, file to save weights to must be provided)
+$SAVE_WEIGHTS 0
+d
+# activation function; 0: sigmoid, other: linear
+$ACT_FUNCT 0
+
+# keep-alive interval (optional; if < 1, no keep-alive)
+$KEEP_ALIVE 10000
+
+# saving weights interval (optional; if < 1, no saving)
+$SAVE_INTERVAL 10000
+
+# number of test cases (rows in truth table)
+$NUM_TEST_CASES 4
+
+#===============================================================================#
+# Network Parameters
+
+# size of input activation layer (< 1 automatically set to 1)
+$NUM_IN_ACT 2
+
+# size of hidden activation layers (< 1 automatically set to 1, separated by spaces if multiple)
+$NUM_HID_ACT 5
+
+# size of output activation layer (< 1 automatically set to 1)
+$NUM_OUT_ACT 3
+
+#===============================================================================#
+# Training Parameters
+
+# learning rate
+$LAMBDA 0.3
+
+# number of iterations
+$MAX_ITER 100000
+
+# minimum error threshold
+$MIN_ERROR 2e-4
+
+# random max range for initial weights
+$HI_RANGE 1.5
+
+# random max range for initial weights
+$LOW_RANGE 0.1
+
+#===============================================================================#
+# File Parameters
+
+# file to load truth table from (number of rows must match specifications)
+$TRUTH_TABLE_FILE ./TruthTables/truth_table.txt
+
+# file to load weights from (if no valid file is provided, random weights are generated)
+$LOAD_FILE ./Weights/weights.bin
+
+# file to save weights to (if no valid file is provided, weights are not saved)
+$SAVE_FILE ./Weights/weights.bin
+
+

@@ -2,7 +2,7 @@
 # Neural Network Config File  #
 #=============================#
 
-
+# This file configures the neural network for running when number of output activations is 1.
 #===============================================================================#
 # General Parameters
 
@@ -13,16 +13,16 @@ $RUN_MODE 1
 $LOAD_WEIGHTS 0
 
 # saving weights; 0: no, 1: yes (if yes, file to save weights to must be provided)
-$SAVE_WEIGHTS 1
+$SAVE_WEIGHTS 0
 
-# activation function; 0: sigmoid, 1: tanh, 2: relu, other: linear
+# activation function; 0: sigmoid, other: linear
 $ACT_FUNCT 0
 
 # keep-alive interval (optional; if < 1, no keep-alive)
-$KEEP_ALIVE 1000
+$KEEP_ALIVE 10000
 
 # saving weights interval (optional; if < 1, no saving)
-$SAVE_INTERVAL 1000
+$SAVE_INTERVAL 10000
 
 # number of test cases (rows in truth table)
 $NUM_TEST_CASES 4
@@ -31,13 +31,13 @@ $NUM_TEST_CASES 4
 # Network Parameters
 
 # size of input activation layer (< 1 automatically set to 1)
-$NUM_IN_ACT 2
+$NUM_IN_ACT 3
 
 # size of hidden activation layers (< 1 automatically set to 1, separated by spaces if multiple)
 $NUM_HID_ACT 5
 
 # size of output activation layer (< 1 automatically set to 1)
-$NUM_OUT_ACT 3
+$NUM_OUT_ACT 1
 
 #===============================================================================#
 # Training Parameters
@@ -61,12 +61,12 @@ $LOW_RANGE 0.1
 # File Parameters
 
 # file to load truth table from (number of rows must match specifications)
-$TRUTH_TABLE_FILE ../TruthTables/truth_table.txt
+$TRUTH_TABLE_FILE ./TruthTables/truth_table_one.txt
 
 # file to load weights from (if no valid file is provided, random weights are generated)
-$LOAD_FILE ../Weights/weights.bin
+$LOAD_FILE ./Weights/weights.bin
 
 # file to save weights to (if no valid file is provided, weights are not saved)
-$SAVE_FILE ../Weights/weights.bin
+$SAVE_FILE ./Weights/weights.bin
 
 

@@ -1,8 +1,8 @@
 /**
  * Author: Pranav Sukesh
  * Date of Creation: 1/26/2024
- * This project is an A-B-C feed-forward neural network that can be both trained and ran.
- * The user can specify specific configuration parameters for the network in the setConfigurationParameters() function,
+ * This project is an A-B-C feed-forward neural network that can be both ran and trained using back propagation.
+ * The user can specify specific configuration parameters using an external config file (read by the parser),
  * including the number of input, hidden, and output activation layers, the average error cutoff, the maximum number of
  * iterations, the lambda value, and the type of and range of weight population. The user can either let the network
  * randomize the initial weights, or they can specify a file for reading weights.
@@ -17,15 +17,18 @@
  * specified file.
  */
 
-#include "fileparser.h"
+#include <iostream>
+#include <chrono>
 #include <cfloat>
+
+#include "Parser.cpp"
 
 using namespace std;
 
 
 #define DIVIDER "------------------------------------------------------------------------------\n"
 
-#define DEFAULT_CONFIG    "../ConfigFiles/configfile.txt"
+#define DEFAULT_CONFIG    "./ConfigFiles/defaultConfigFile.txt"
 
 #define OUTPUT_PRECISION   17
 
@@ -38,19 +41,17 @@ using namespace std;
 typedef double* DARRAY1D;
 typedef double** DARRAY2D;
 
-time_t startTime, endTime;
+long timeSpentTraining;                         // time spent training the network
 
-enum FUNCT_TYPE { SIGMOID, LINEAR };             // enum for types of activation functions
+enum FUNCT_TYPE { SIGMOID, LINEAR };            // enum for types of activation functions
 
 int numInAct, numHidAct, numOutAct;
-
-bool isTraining;
 
 FUNCT_TYPE actFunctName;
 double (*actFunct)(double);                     // uses function pointers instead of conditionals to not branch paths
 double (*actFunctDeriv)(double);
 
-bool isLoading, isSaving;
+bool isTraining, isLoading, isSaving;
 string configFileName, saveFilename, loadFilename, truthTableFilename;
 
 
@@ -75,9 +76,9 @@ DARRAY1D jThetas;
 DARRAY1D iPsis;
 
 /**
- * \brief         Evaluates the given value in the sigmoid function: y = 1 / (1 + e^(-x)).
- * \param value   the value to be evaluated in the sigmoid function
- * \return        the evaluated value
+ * Evaluates the given value in the sigmoid function: y = 1 / (1 + e^(-x)).
+ * @param value   the value to be evaluated in the sigmoid function
+ * @return        the evaluated value
  */
 double sigmoid(double value)
 {
@@ -85,9 +86,9 @@ double sigmoid(double value)
 }
 
 /**
- * \brief         Evaluates the given value in the sigmoid derivative: y = sigmoid(x) * (1 - sigmoid(x)).
- * \param value   the value to be evaluated in the sigmoid derivative
- * \return        the evaluated value
+ * Evaluates the given value in the sigmoid derivative: y = sigmoid(x) * (1 - sigmoid(x)).
+ * @param value   the value to be evaluated in the sigmoid derivative
+ * @return        the evaluated value
  */
 double sigmoidDeriv(double value)
 {
@@ -96,9 +97,9 @@ double sigmoidDeriv(double value)
 }
 
 /**
- * \brief         Evaluates the given value in the linear function: y = x.
- * \param value   the value to be evaluated in the linear function
- * \return        the evaluated value
+ * Evaluates the given value in the linear function: y = x.
+ * @param value   the value to be evaluated in the linear function
+ * @return        the evaluated value
  */
 double linear(double value)
 {
@@ -106,9 +107,9 @@ double linear(double value)
 }
 
 /**
- * \brief         Evaluates the given value in the linear function's derivative: y = 1.
- * \param value   the value to be evaluated in the linear function's derivative
- * \return        the evaluated value
+ * Evaluates the given value in the linear function's derivative: y = 1.
+ * @param value   the value to be evaluated in the linear function's derivative
+ * @return        the evaluated value
  */
 double linearDeriv(double value)
 {
@@ -116,87 +117,96 @@ double linearDeriv(double value)
 }
 
 /**
- * \brief   Generates a random double between the specified high and low bounds (outlined in the global variables
- *          when setting configuration parameters).
- * \return  a random double between the specified high and low bounds.
+ * Generates a random double between the specified high and low bounds (outlined in the global variables
+ * when setting configuration parameters).
+ * @return  a random double between the specified high and low bounds.
  */
 double randDouble()
 {
    return lowRange + (static_cast<double>(rand()) / RAND_MAX) * (hiRange - lowRange);
 }
 
-/*
- * Accept a value representing seconds elapsed and print out a decimal value in easier to digest units.
- * @param seconds the number of seconds elapsed
+/**
+ * Accepts a time in milliseconds and prints the time in milliseconds, seconds, minutes, hours, days, and weeks.
+ * @param milliseconds the time in milliseconds
  */
-void printTime(double seconds)
+void printTime(long milliseconds)
 {
-   double minutes, hours, days, weeks;
+   long seconds, minutes, hours, days, weeks;
 
    cout << "Elapsed time: ";
 
-   if (seconds < 1.)
-      cout << (seconds * MS_PER_SECOND) << " milliseconds";
-   else if (seconds < SECONDS_PER_MINUTE)
-      cout << seconds << " seconds";
-   else
+   if (milliseconds > MS_PER_SECOND)
    {
-      minutes = seconds / SECONDS_PER_MINUTE;
+      seconds = milliseconds / MS_PER_SECOND;
+      milliseconds %= MS_PER_SECOND;
 
-      if (minutes < MINUTES_PER_HOUR)
-         cout << minutes << " minutes";
-      else
+      if (seconds > SECONDS_PER_MINUTE)
       {
-         hours = minutes / MINUTES_PER_HOUR;
+         minutes = seconds / SECONDS_PER_MINUTE;
+         seconds %= SECONDS_PER_MINUTE;
 
-         if (hours < HOURS_PER_DAY)
-            cout << hours << " hours";
-         else
+         if (minutes > MINUTES_PER_HOUR)
          {
-            days = hours / HOURS_PER_DAY;
+            hours = minutes / MINUTES_PER_HOUR;
+            minutes %= MINUTES_PER_HOUR;
 
-            if (days < DAYS_PER_WEEK)
-               cout << days << " days";
-            else
+            if (hours > HOURS_PER_DAY)
             {
-               weeks = days / DAYS_PER_WEEK;
+               days = hours / HOURS_PER_DAY;
+               hours %= HOURS_PER_DAY;
 
-               cout << weeks << " weeks";
-            }
-         } // if (hours < HOURS_PER_DAY)...else
-      } // if (minutes < MINUTES_PER_HOUR)...else
-   } // else if (seconds < SECONDS_PER_MINUTE)...else
+               if (days > DAYS_PER_WEEK)
+               {
+                  weeks = days / DAYS_PER_WEEK;
+                  days %= DAYS_PER_WEEK;
 
-   printf("\n\n");
+                  cout << weeks << " weeks, ";
+               } // if (days > DAYS_PER_WEEK)
+
+               cout << days << " days, ";
+            } // if (hours > HOURS_PER_DAY)
+
+            cout << hours << " hours, ";
+         } // if (minutes > MINUTES_PER_HOUR)
+
+         cout << minutes << " minutes, ";
+      } // if (seconds > SECONDS_PER_MINUTE)
+
+      cout << seconds << " seconds, ";
+   } // if (milliseconds > MS_PER_SECOND)
+
+   cout << milliseconds << " milliseconds\n\n";
+
    return;
-} // void printTime(double seconds)
-
+} // void printTime(long milliseconds)
 
 /**
- * \brief   Sets the configuration parameters for the network. These parameters include:
- *          The number of input, hidden, and output activations,
- *          Whether the network is training or running,
- *          The type of weight population (and information for saving and loading weights),
- *          The range of the random weights,
- *          The lambda value applied in training,
- *          The error cutoff for training (and its accumulator),
- *          The maximum allowed iterations when training (and its accumulator),
- *          And the number of specified training sets,
+ * Sets the configuration parameters for the network by reading them from the config file using the parser.
+ * These parameters include:
+ *    The number of input, hidden, and output activations,
+ *    Whether the network is training or running,
+ *    The relevant file names for loading and saving weights, the truth table, and the config file,
+ *    The activation function used in the network,
+ *    The keep alive/saving intervals,
+ *    The type of weight population,
+ *    The range of the random weights,
+ *    The lambda value applied in training,
+ *    The error cutoff for training (and its accumulator),
+ *    The maximum allowed iterations when training (and its accumulator),
+ *    And the number of specified training sets.
  */
 void setConfigurationParameters()
 {
    parser::readConfigFile(configFileName);
 
-   numInAct = stoi(parser::getParameter("NUM_IN_ACT"));
-   numHidAct = stoi(parser::getParameter("NUM_HID_ACT"));
-   numOutAct = stoi(parser::getParameter("NUM_OUT_ACT"));
+   numInAct = parser::numInAct;
+   numHidAct = parser::numHidAct;
+   numOutAct = parser::numOutAct;
 
-   if (stoi(parser::getParameter("RUN_MODE")) == 0)
-      isTraining = false;
-   else
-      isTraining = true;
+   isTraining = parser::isTraining;
 
-   actFunctName = static_cast<FUNCT_TYPE>(stoi(parser::getParameter("ACT_FUNCT")));
+   actFunctName = static_cast<FUNCT_TYPE>(parser::actFunctIndex);
 
    switch (actFunctName)
    {
@@ -212,52 +222,43 @@ void setConfigurationParameters()
 
    } // switch (actFunctName)
 
+   isLoading = parser::isLoading;
+   isSaving = parser::isSaving;
 
-   if (stoi(parser::getParameter("LOAD_WEIGHTS")) == 0)
-      isLoading = false;
-   else
-      isLoading = true;
+   keepAliveInterval = parser::keepAliveInterval;
 
-   if (stoi(parser::getParameter("SAVE_WEIGHTS")) == 0)
-      isSaving = false;
-   else
-      isSaving = true;
+   savingInterval = parser::savingInterval;
 
-   keepAliveInterval = stoi(parser::getParameter("KEEP_ALIVE"));
+   loadFilename = parser::loadFilename;
+   saveFilename = parser::saveFilename;
 
-   if (isSaving) savingInterval = stoi(parser::getParameter("SAVE_INTERVAL"));
+   truthTableFilename = parser::truthTableFile;
 
-   if (isLoading) loadFilename = parser::getParameter("LOAD_FILE");
-   if (isSaving) saveFilename = parser::getParameter("SAVE_FILE");
+   hiRange = parser::hiRange;
+   lowRange = parser::lowRange;
 
-   truthTableFilename = parser::getParameter("TRUTH_TABLE_FILE");
+   lambda = parser::lambda;
+   avgErrCut = parser::avgErrCut;
+   totalError = avgError = 0.0;
 
-   if (isTraining)
-   {
-      hiRange = stod(parser::getParameter("HI_RANGE"));
-      lowRange = stod(parser::getParameter("LOW_RANGE"));
-
-      lambda = stod(parser::getParameter("LAMBDA"));
-      avgErrCut = stod(parser::getParameter("MIN_ERROR"));
-      totalError = avgError = 0.0;
-
-      maxIterations = stoi(parser::getParameter("MAX_ITER"));
-      numTrainingSets = stoi(parser::getParameter("NUM_TEST_CASES"));
-      curIterations = curTestCase = 0;
-   }
+   maxIterations = parser::maxIterations;
+   numTrainingSets = parser::numTrainingSets;
+   curIterations = curTestCase = 0;
 
    return;
 } // void setConfigurationParameters()
 
 /**
- * \brief   Presents the user with the current configuration parameters for the network, set in the
- *          setConfigurationParameters() function, to ensure that the user is aware of the current
- *          specifications of the network.
+ * Presents the user with the configuration parameters for the network, including:
+ * The config file being read, the network configuration parameters, the running mode, the relevant files to
+ * read from/write to, and the runtime training parameters (if the network is training).
  */
 void echoConfigurationParameters()
 {
    cout << DIVIDER;
-   cout << "Reading Configuration Parameters from: " << "../configfile.txt\n";
+   cout << "Reading Configuration Parameters from: " << configFileName <<
+      (configFileName == DEFAULT_CONFIG ? " (Default)" : "") << endl;
+
    cout << DIVIDER;
    cout << numInAct << "-" << numHidAct << "-" << numOutAct << " Network Configuration Parameters\n";
    cout << DIVIDER;
@@ -271,6 +272,8 @@ void echoConfigurationParameters()
 
    if (isSaving)
       cout << "Saving weights to file: " << saveFilename << endl;
+   else
+      cout << "Not saving weights to file\n";
 
    cout << "Truth Table obtained from: " << truthTableFilename << " (" << numTrainingSets << " test cases)\n";
 
@@ -281,21 +284,27 @@ void echoConfigurationParameters()
       cout << "Max iterations:           " << maxIterations << endl;
       cout << "Error threshold:          " << avgErrCut << endl;
       cout << "Lambda Value:             " << lambda << endl;
-      cout << "Saving weights every " << savingInterval << " iterations\n";
+      if (isSaving)
+      {
+         if (savingInterval > 0)
+            cout << "Saving interval:          " << savingInterval << " iterations\n";
+         else
+            cout << "Saving interval:          Disabled\n";
+      }
       cout << DIVIDER;
    }
+
    return;
 } // void echoConfigurationParameters()
 
 /**
- * \brief   Allocates memory for the arrays used in the network, including:
- *          The input/hidden/output activation arrays,
- *          The weights between the hidden and input activations and the hidden and output activations,
- *          The truth table and expected values for the training sets,
- *          And training-specific arrays (if the network is training), including:
- *             The thetas (a weighted sum of the previous layer's activations),
- *             The omega values (the difference between the expected and actual output),
- *             The psi values (omega * theta evaluated in the derivative of the activation function),
+ * Allocates memory for the arrays used in the network, including:
+ * The input/hidden/output activation arrays,
+ * The weights between the hidden and input activations and the hidden and output activations,
+ * The truth table and expected values for the training sets,
+ * And training-specific arrays (if the network is training), including:
+ *    The thetas (a weighted sum of the previous layer's activations),
+ *    The psi values (omega * theta evaluated in the derivative of the activation function),
  */
 void allocateMemory()
 {
@@ -329,8 +338,8 @@ void allocateMemory()
 } // void allocateMemory()
 
 /**
- * \brief  Randomizes the weights between the hidden and input activations and the hidden and output activations by
- *         using the randDouble() function to generate a random double between the specified high and low bounds.
+ * Randomizes the weights between the hidden and input activations and the hidden and output activations by using the
+ * randDouble() function to generate a random double between the specified high and low bounds.
  */
 void randomizeWeights()
 {
@@ -356,13 +365,8 @@ void randomizeWeights()
 } // void randomizeWeights()
 
 /**
- * \brief Saves the weights for an A-B-C network based on the specified output file.
- *        The format of the file is as follows: the first line contains the configuration of the network (number of
- *        input, hidden, and output activations), and the following lines contain the weights between each hidden
- *        activation and the input activations, followed by the weights between each output activation and the hidden
- *        activations (each new activation node is separated by a blank line). The saved weights are the weights
- *        that the network produces after training.
- *
+ * Saves the weights for an A-B-C network to the specified output file, using the parser to write the weights to the
+ * specified file from the global arrays.
  */
 void saveWeights()
 {
@@ -371,7 +375,8 @@ void saveWeights()
 } // void saveWeights()
 
 /**
- *
+ * Loads the weights for the network based on the specified input file, using the parser to read the weights from
+ * the file and store them in the global arrays.
  */
 void loadWeights()
 {
@@ -380,10 +385,10 @@ void loadWeights()
 } // void loadWeights()
 
 /**
- * \brief   Populates the arrays utilized in the network, that were created in the allocateMemory() function.
- *          The truth table is populated with combinations of 0 and 1, and the expected value is changed by the user to
- *          run different bitwise operators. Additionally, the weights can be populated with either randomized values
- *          or loaded based on a specified file.
+ * Populates the arrays utilized in the network, that were created in the allocateMemory() function. The truth table is
+ * populated based on the specified file in the config file, and the expected values are populated based on the truth
+ * table. If the network is loading weights, the weights are loaded from the specified file. Otherwise, the weights are
+ * randomized based on the specified range in the config file.
  */
 void populateArrays()
 {
@@ -398,9 +403,9 @@ void populateArrays()
 } // void populateArrays()
 
 /**
- * \brief   Runs the network for the current test case. The network calculates the weighted sum of the input activations
- *          and applies the activation function to the sum to determine the values for each hidden activation. This
- *          process is repeated for the output activation. The theta and omega values are stored locally.
+ * Runs the network for the current test case. The network calculates the weighted sum of the input activations and
+ * applies the activation function to the sum to determine the values for each hidden activation. This process is
+ * repeated for the output activation. The theta and omega values are stored locally.
  */
 void runNetwork()
 {
@@ -434,8 +439,8 @@ void runNetwork()
 } // void runNetwork()
 
 /**
- * \brief   Runs the network for the current test case and calculates the error. This function is called while training
- *          the network, so it stores the theta values in a global array.
+ * Runs the network for the current test case and calculates the error. This function is called while training the
+ * network, so it stores the theta and psi values in a global array.
  */
 void runForTrain()
 {
@@ -443,7 +448,6 @@ void runForTrain()
    double iOmega, iTheta;
 
    a = truthTable[curTestCase];
-   totalError = 0.0;
 
    for (j = 0; j < numHidAct; ++j)
    {
@@ -469,19 +473,18 @@ void runForTrain()
       F[i] = actFunct(iTheta);
       iOmega = expectedValues[curTestCase][i] - F[i];
       iPsis[i] = iOmega * actFunctDeriv(iTheta);
-      totalError += iOmega * iOmega * 0.5;
+
    } // for (i = 0; i < numOutAct; ++i)
 
    return;
 } // void runForTrain()
 
 /**
- * \brief   Trains the neural network to minimize error through gradient descent. The network runs forward for
- *          each test case, calculating the error. The partial derivatives of the error with respect to each individual
- *          weight between the hidden and output activation layers are calculated, then are multiplied by lambda to
- *          determine the change in weights for the next iteration. A similar process is done for the weights between
- *          the input and hidden activation layers, and the weights are updated accordingly. The process continues
- *          until either the average error is less than the error cutoff or the maximum number of iterations is reached.
+ * Trains the neural network to minimize error through gradient descent, utilizing the backpropagation algorithm to
+ * optimize the efficiency. The network trains by first running the network for each test case, then calculating the
+ * partial derivatives of the error with respect to each individual weight, then applying these changes in weights to the
+ * weights, repeating this process until the average error reaches the cutoff or the maximum number of iterations is
+ * achieved. If specified, the weights are saved to a file at a specified interval.
  */
 void trainNetwork()
 {
@@ -489,28 +492,32 @@ void trainNetwork()
    double iOmega, jOmega, jPsi;
 
    avgError = DBL_MAX;
+   auto startTime = chrono::high_resolution_clock::now();
+   auto endTime = chrono::high_resolution_clock::now();
 
    while (avgError > avgErrCut && curIterations < maxIterations)           // trains the network
    {
       curIterations++;
       totalError = 0.0;
 
-      if (curIterations % keepAliveInterval == 0)
+      if (keepAliveInterval > 0 && curIterations % keepAliveInterval == 0)
       {
          cout << "Iteration " << curIterations << ": Average Error: " << avgError << endl;
-         time(&endTime);
-         printTime(difftime(endTime, startTime));
-      }
 
-      if (isSaving && curIterations % savingInterval == 0)
+         endTime = chrono::high_resolution_clock::now();
+         timeSpentTraining = chrono::duration_cast<chrono::milliseconds>(endTime - startTime).count();
+         printTime(timeSpentTraining);
+      }  // if (keepAliveInterval > 0 && curIterations % keepAliveInterval == 0)
+
+      if (isSaving && savingInterval > 0 && curIterations % savingInterval == 0)
       {
-         cout << "Iteration " << curIterations << ": Saving weights to file: " << saveFilename << endl;
+         cout << "Iteration " << curIterations << ": Saving weights to file: " << saveFilename << endl << endl;
          saveWeights();
       }
 
       for (curTestCase = 0; curTestCase < numTrainingSets; ++curTestCase)
       {
-         runForTrain();
+         runForTrain();                                     // calculates activations, thetas and psis
 
          for (j = 0; j < numHidAct; ++j)                    // calculates changes in weights
          {
@@ -540,22 +547,25 @@ void trainNetwork()
 
       } // for (curTestCase = 0; curTestCase < numTrainingSets; ++curTestCase)
 
-      avgError = totalError / static_cast<float>(numTrainingSets);
+      avgError = totalError / static_cast<double>(numTrainingSets);
 
    } // while (avgError > avgErrCut && curIterations < maxIterations)
+
+   endTime = chrono::high_resolution_clock::now();
+   timeSpentTraining = chrono::duration_cast<chrono::milliseconds>(endTime - startTime).count();
 
    return;
 } // void trainNetwork()
 
 /**
- * \brief   Reports the current state of the network, including the input activations, expected output, and actual output.
- *          This function is called after running the network for each test case.
+ * Reports the current state of the network, including the input activations, expected output, and actual output.
+ * This function is called after running the network for each test case.
  */
 void reportNetworkState()
 {
    int i, k;
 
-   cout << "[";
+   cout << "Input:           [";
    cout << fixed << setprecision(OUTPUT_PRECISION) << truthTable[curTestCase][0];
 
    for (k = 1; k < numInAct; ++k)
@@ -563,7 +573,7 @@ void reportNetworkState()
       cout << ", " << truthTable[curTestCase][k];
    }
 
-   cout << "] | [";
+   cout << "]\nExpected Output: [";
    cout << expectedValues[curTestCase][0];
 
    for (i = 1; i < numOutAct; ++i)
@@ -571,7 +581,7 @@ void reportNetworkState()
       cout << ", " << expectedValues[curTestCase][i];
    }
 
-   cout << "] | [";
+   cout << "]\nActual Output:   [";
    cout << F[0];
 
    for (i = 1; i < numOutAct; ++i)
@@ -585,8 +595,8 @@ void reportNetworkState()
 } // void reportNetworkState()
 
 /**
- * \brief   Reports the results of the network after running on the truth table with the current weights. The user is
- *          presented with the truth table, expected output, actual output, and error for each test case.
+ * Reports the results of the network on all training sets after running on the truth table with the current weights.
+ * The user is presented with the truth table, expected output, and actual output for each test case.
  */
 void reportTruthTable()
 {
@@ -595,15 +605,12 @@ void reportTruthTable()
    cout << DIVIDER;
    cout << "Truth Table: \n";
 
-   cout << "Input | Expected Output | Actual Output\n";
-
    for (curTestCase = 0; curTestCase < numTrainingSets; ++curTestCase)
    {
-      cout << "Case " << (curTestCase + 1) << ": ";
+      cout << "\nCase " << (curTestCase + 1) << ":\n";
 
       runNetwork();
       reportNetworkState();
-
    } // for (curTestCase = 0; curTestCase < numTrainingSets; ++curTestCase)
 
    cout << DIVIDER;
@@ -612,21 +619,21 @@ void reportTruthTable()
 } // void reportTruthTable()
 
 /**
- * \brief   Reports the results of the network after training.
- *          The final average error and number of iterations are reported, along with the truth table, expected output,
- *          actual output, and error for each test case when running the network with the optimized weights. If the user
- *          wishes to save the weights, the weights are saved to the specified file.
+ * Reports the results of the network after training. The final average error and number of iterations are reported,
+ * along with the reason for exiting, time elapsed, truth table, expected output, and actual output for each test case
+ * when running the network with the optimized weights. If the user wishes to save the weights, the weights are saved
+ * to the specified file.
  */
 void reportTrainingResults()
 {
-   cout << "\n" << DIVIDER;
+   cout << DIVIDER;
    cout << "Training Results:\n";
    cout << DIVIDER;
 
    cout << "Final Average Error:  " << avgError << endl;
    cout << "Number of Iterations: " << curIterations << endl << endl;
-   time(&endTime);
-   printTime(difftime(endTime, startTime));
+
+   printTime(timeSpentTraining);
 
    cout << "Ended training after reaching the: \n";
    if (curIterations >= maxIterations)
@@ -644,17 +651,16 @@ void reportTrainingResults()
 } // void reportTrainingResults()
 
 /**
-* \brief   Reports the results of the network.
-*          If the network is training:
- *         The final average error and number of iterations are reported, along with the truth table, expected output,
- *         and actual output. If the user wishes to save the weights, the weights are saved to the specified file.
- *         If the network is running:
- *         Reports the truth table, expected output, and actual output for each test case.
+ * Reports the results of the network.
+ * If the network is training:
+ * The final average error and number of iterations are reported, along with the truth table, expected output,
+ * and actual output. If the user wishes to save the weights, the weights are saved to the specified file.
+ * If the network is running:
+ * Reports the truth table, expected output, and actual output for each test case.
  */
 void reportResults()
 {
-   if (isTraining)
-      reportTrainingResults();
+   if (isTraining) reportTrainingResults();
 
    reportTruthTable();
 
@@ -662,33 +668,32 @@ void reportResults()
 } // void reportResults()
 
 /**
- * \brief   Runs the network for all test cases in the truth table and updates the stored activations.
+ * Runs the network for all test cases in the truth table and updates the stored activations.
  */
 void runAllTestCases()
 {
    for (curTestCase = 0; curTestCase < numTrainingSets; ++curTestCase)
-   {
       runNetwork();
-   }
+
+   return;
 }  // void runAllTestCases()
 
 /**
- * \brief   Runs the A-B-C neural network, training or running based on the user's specifications. The network first
- *          sets the configuration parameters and presents them to the user, then allocates memory for the arrays used
- *          in either training or running the network. The arrays are then populated with their required values, and the
- *          network is either trained or run. The results are then reported to the user, and if training, the weights
- *          may be saved to a file.
- * \return  0 (ignore output)
+ * Runs the A-B-C neural network utilizing backpropagation, training or running based on the user's specifications.
+ * The network first sets the configuration parameters and presents them to the user, then allocates memory for the
+ * arrays used in either training or running the network. The arrays are then populated with their required values, and
+ * the network is either trained or run. The results are then reported to the user, and if training, the weights may be
+ * saved to a file.
+ *
+ * @param argc the number of command line arguments
+ * @param argv the command line arguments
+ * @return     0 if the program runs successfully
  */
 int main(int argc, char* argv[])
 {
    srand(time(NULL));
-   time(&startTime);
 
-   if (argc > 0)
-      configFileName = argv[0];
-   else
-      configFileName = DEFAULT_CONFIG;
+   configFileName = (argc > 1) ? argv[1] : DEFAULT_CONFIG;
 
    setConfigurationParameters();
    echoConfigurationParameters();
