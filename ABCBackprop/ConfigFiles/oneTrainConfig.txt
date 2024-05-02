@@ -31,10 +31,10 @@ $NUM_TEST_CASES 4
 # Network Parameters
 
 # size of input activation layer (< 1 automatically set to 1)
-$NUM_IN_ACT 3
+$NUM_IN_ACT 2
 
 # size of hidden activation layers (< 1 automatically set to 1, separated by spaces if multiple)
-$NUM_HID_ACT 5
+$NUM_HID_ACT 20
 
 # size of output activation layer (< 1 automatically set to 1)
 $NUM_OUT_ACT 1
@@ -55,7 +55,7 @@ $MIN_ERROR 2e-4
 $HI_RANGE 1.5
 
 # random max range for initial weights
-$LOW_RANGE 0.1
+$LOW_RANGE -1.5
 
 #===============================================================================#
 # File Parameters

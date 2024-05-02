@@ -15,15 +15,8 @@
 
 #include <iostream>
 #include <fstream>
-
 using namespace std;
 
-/**
- * The namespace parser is used to interpret config files and data files that are used to configure the neural network.
- * It is capable of reading from config files, binary weight files, and truth table files. It also contains a number of
- * public variables that are used to store the data that is read from the files. The parser can omit comments and
- * whitespace in said files, and its data can be accessed by the neural network to configure itself.
- */
 namespace parser
 {
    #define COMMENT_CHAR    '#'
@@ -119,12 +112,12 @@ namespace parser
       return extractedLine;
    }  // inline string getValidLine(ifstream &stream)
 
-   /**
-    * Adds the given key-value pair to the appropriate variable in the namespace. The key is used to determine which
-    * variable to add the value to and what type the value must be converted to.
-    * @param key     the key that determines which variable to add the value to
-    * @param value   the value to be added to the variable
-    */
+/**
+ * Adds the given key-value pair to the appropriate variable in the namespace. The key is used to determine which
+ * variable to add the value to and what type the value must be converted to.
+ * @param key     the key that determines which variable to add the value to
+ * @param value   the value to be added to the variable
+ */
    inline void addParamtoVars(string key, string value)
    {
       if (key == "NUM_IN_ACT")
@@ -241,8 +234,6 @@ namespace parser
    {
       int i, j, k;
       int weightInAct, weightHidAct, weightOutAct;
-
-      weightInAct = weightHidAct = weightOutAct = 0;
 
       bool unmatchingConfig;
 
@@ -373,7 +364,7 @@ namespace parser
       for (curElement = 0; curElement < numElements; ++curElement)
       {
          outputArray[curElement] = stod(extractedLine.substr(0, extractedLine.find(VALUE_DELIMITER)));
-         extractedLine = extractedLine.substr(extractedLine.find(VALUE_DELIMITER) + 1, extractedLine.length()-1);
+         extractedLine = extractedLine.substr(extractedLine.find(VALUE_DELIMITER) + 1, extractedLine.length() - 1);
       }
 
       dataStream.close();
@@ -399,12 +390,12 @@ namespace parser
          for (curElement = 0; curElement < numElements; ++curElement)
          {
             outputArray[curElement] = stod(values.substr(0, values.find(VALUE_DELIMITER)));
-            values = values.substr(values.find(VALUE_DELIMITER) + 1, values.length()-1);
+            values = values.substr(values.find(VALUE_DELIMITER) + 1, values.length() - 1);
          }
       }
       else
       {
-         loadArrayFromExternalDataFile( values.substr(1, values.length()-1), numElements, outputArray);
+         loadArrayFromExternalDataFile( values.substr(1, values.length() - 1), numElements, outputArray);
       }
 
       return;
@@ -450,7 +441,7 @@ namespace parser
          extractedLine = getValidLine(truthTableStream);
 
          inputValues = extractedLine.substr(0, extractedLine.find('|') - 1);
-         outputValues = extractedLine.substr(extractedLine.find('|') + 2, extractedLine.length()-1);
+         outputValues = extractedLine.substr(extractedLine.find('|') + 2, extractedLine.length() - 1);
 
          parseTruthTableInfo(inputValues, numInAct, truthTable[curTestCase]);
          parseTruthTableInfo(outputValues, numOutAct, expectedValues[curTestCase]);
@@ -485,6 +476,5 @@ namespace parser
 
       return;
    } // inline void readConfigFile(string name)
-
 
 } // namespace parser

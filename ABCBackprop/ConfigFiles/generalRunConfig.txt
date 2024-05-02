@@ -19,10 +19,10 @@ d
 $ACT_FUNCT 0
 
 # keep-alive interval (optional; if < 1, no keep-alive)
-$KEEP_ALIVE 10000
+$KEEP_ALIVE 0
 
 # saving weights interval (optional; if < 1, no saving)
-$SAVE_INTERVAL 10000
+$SAVE_INTERVAL 0
 
 # number of test cases (rows in truth table)
 $NUM_TEST_CASES 4
@@ -34,7 +34,7 @@ $NUM_TEST_CASES 4
 $NUM_IN_ACT 2
 
 # size of hidden activation layers (< 1 automatically set to 1, separated by spaces if multiple)
-$NUM_HID_ACT 5
+$NUM_HID_ACT 14
 
 # size of output activation layer (< 1 automatically set to 1)
 $NUM_OUT_ACT 3
