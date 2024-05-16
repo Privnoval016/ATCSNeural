@@ -57,8 +57,7 @@ using namespace std;
 
 #define DEFAULT_CONFIG    "./ConfigFiles/defaultConfigFile.txt"
 
-#define INPUT_PRECISION    5
-#define OUTPUT_PRECISION   17
+#define DEFAULT_PRECISION  12
 
 #define MS_PER_SECOND      1000
 #define SECONDS_PER_MINUTE 60
@@ -81,11 +80,13 @@ enum FUNCT_TYPE { SIGMOID, TANH, LINEAR };      // enum for types of activation 
 int numActLayers;
 int* layerConfig;                               // array to store the number of activations in each activation layer
 
+int precision;
+
 FUNCT_TYPE actFunctName;
 double (*actFunct)(double);                     // uses function pointers instead of conditionals to not branch paths
 double (*actFunctDeriv)(double);
 
-bool isTraining, isLoading, isSaving;
+bool isTraining, isLoading, isSaving, isPrintingInput;
 string configFileName, saveFilename, loadFilename, truthTableFilename;
 
 
@@ -259,6 +260,9 @@ void setConfigurationParameters()
    parser::setLayerConfigData(layerConfig);
 
    isTraining = parser::isTraining;
+   isPrintingInput = parser::isPrintingInput;
+
+   precision = parser::precision > 0 ? parser::precision : DEFAULT_PRECISION;
 
    actFunctName = static_cast<FUNCT_TYPE>(parser::actFunctIndex);
 
@@ -675,38 +679,42 @@ void reportNetworkState()
 {
    int i, m, n;
 
-   cout << "[";
-   cout << fixed << setprecision(INPUT_PRECISION) << truthTable[curTrainingCase][0];
-
-   n = IN_ACT_LAYER;
-   for (m = 1; m < layerConfig[n]; ++m)
+   if (isPrintingInput)
    {
-      cout << ", " << truthTable[curTrainingCase][m];
+      cout << "[";
+      cout << fixed << setprecision(precision) << truthTable[curTrainingCase][0];
+
+      n = IN_ACT_LAYER;
+      for (m = 1; m < layerConfig[n]; ++m)
+      {
+         cout << ", " << truthTable[curTrainingCase][m];
+      }
+
+      if (isTraining)
+      {
+         cout << "] | [";
+         cout << fixed << setprecision(precision) << expectedValues[curTrainingCase][0];
+
+         n = OUT_ACT_LAYER;
+         for (i = 1; i < layerConfig[n]; ++i)
+         {
+            cout << ", " << expectedValues[curTrainingCase][i];
+         }
+      } // if (isTraining)
+
+      cout << "] | [";
+
    }
 
-   if (isTraining)
-   {
-      cout << "] | [";
-      cout << setprecision(OUTPUT_PRECISION) << expectedValues[curTrainingCase][0];
-
-      n = OUT_ACT_LAYER;
-      for (i = 1; i < layerConfig[n]; ++i)
-      {
-         cout << ", " << expectedValues[curTrainingCase][i];
-      }
-   } // if (isTraining)
-
-   cout << "] | [";
-
    n = OUT_ACT_LAYER;
-   cout << setprecision(OUTPUT_PRECISION) << runningOutputs[curTrainingCase][0];
+   cout << fixed << setprecision(precision) << runningOutputs[curTrainingCase][0];
 
    for (i = 1; i < layerConfig[n]; ++i)
    {
       cout << ", " << runningOutputs[curTrainingCase][i];
    }
 
-   cout << "] \n";
+   cout << (isPrintingInput ? "]" : "") << endl;
 
    return;
 } // void reportNetworkState()
@@ -720,9 +728,14 @@ void reportTruthTable()
    cout << DIVIDER;
    cout << "Truth Table: \n";
 
-   cout << "\nInput Activations";
-   if (isTraining) cout << " | Expected Output";
-   cout << " | Actual Output\n";
+   if (isPrintingInput)
+   {
+      cout << "\nInput Activations";
+      if (isTraining) cout << " | Expected Output";
+      cout << " | ";
+   }
+
+   cout << "Actual Output\n";
 
    for (curTrainingCase = 0; curTrainingCase < numTrainingSets; ++curTrainingCase)
    {

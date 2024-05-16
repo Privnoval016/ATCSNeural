@@ -1,0 +1,35 @@
+#=============================#
+# Neural Network Truth Table  #
+#=============================#
+
+# Format (repeat for each test case):
+# <input_1> <input_2> <input_n> | <output_1> <output_2> <output_n>
+
+# if loading inputs/outputs from an external file, use the following format:
+# ?inputfile.txt | ?outputfile.txt
+
+?./ImageFiles/TxtImgSet2/1_6.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/1_2.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/1_3.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/1_4.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/1_5.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/2_1.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/2_2.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/2_3.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/2_4.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/2_5.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/3_1.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/3_2.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/3_3.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/3_4.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/3_5.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/4_1.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/TxtImgSet2/4_2.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/TxtImgSet2/4_3.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/TxtImgSet2/4_4.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/TxtImgSet2/4_6.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/TxtImgSet2/5_1.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/TxtImgSet2/5_2.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/TxtImgSet2/5_3.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/TxtImgSet2/5_4.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/TxtImgSet2/5_5.txt | 0.0 0.0 0.0 0.0 1.0

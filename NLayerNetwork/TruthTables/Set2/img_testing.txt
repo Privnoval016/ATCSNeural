@@ -1,0 +1,15 @@
+#=============================#
+# Neural Network Truth Table  #
+#=============================#
+
+# Format (repeat for each test case):
+# <input_1> <input_2> <input_n> | <output_1> <output_2> <output_n>
+
+# if loading inputs/outputs from an external file, use the following format:
+# ?inputfile.txt | ?outputfile.txt
+
+?./ImageFiles/TxtImgSet2/1_7.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/2_7.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/3_7.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/TxtImgSet2/4_7.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/TxtImgSet2/5_7.txt | 0.0 0.0 0.0 0.0 1.0

@@ -1,0 +1,71 @@
+#=============================#
+# Neural Network Config File  #
+#=============================#
+
+#===============================================================================#
+# Network Parameters
+
+# size of all activation layers (< 1 automatically set to 1, separated by spaces for multiple layers)
+$ACT_LAYERS 6900 40 20 5
+
+#===============================================================================#
+# General Parameters
+
+# runtime mode; 0: run, 1: train
+$RUN_MODE 1
+
+# output mode; 0: no inputs printed, 1: inputs printed
+$OUTPUT_MODE 0
+
+# loading weights; 0: no, 1: yes (if yes, file to load weights from must be provided, if no, random weights are generated)
+$LOAD_WEIGHTS 0
+
+# saving weights; 0: no, 1: yes (if yes, file to save weights to must be provided)
+$SAVE_WEIGHTS 1
+
+# activation function; 0: sigmoid, 1: tanh, 2: linear
+$ACT_FUNCT 0
+
+# keep-alive interval (optional; if < 1, no keep-alive)
+$KEEP_ALIVE 1000
+
+# saving weights interval (optional; if < 1, no saving)
+$SAVE_INTERVAL 1000
+
+# number of test cases (rows in truth table)
+$NUM_TEST_CASES 25
+
+# number of decimal places to report to (set to 12 by default)
+$PRECISION 12
+
+#===============================================================================#
+# Training Parameters
+
+# learning rate
+$LAMBDA 0.2
+
+# number of iterations
+$MAX_ITER 100000
+
+# minimum error threshold
+$MIN_ERROR 1.3e-4
+
+# random max range for initial weights
+$HI_RANGE 1.5
+
+# random max range for initial weights
+$LOW_RANGE -1.5
+
+#===============================================================================#
+# File Parameters
+
+# file to load truth table from (number of rows must match specifications)
+$TRUTH_TABLE_FILE ./TruthTables/Set1/img_training.txt
+
+# file to load weights from (if no valid file is provided, random weights are generated)
+$LOAD_FILE ./Weights/img_training_weights1.bin
+
+# file to save weights to (if no valid file is provided, weights are not saved)
+$SAVE_FILE ./Weights/img_training_weights1.bin
+
+

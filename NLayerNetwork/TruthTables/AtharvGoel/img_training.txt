@@ -1,0 +1,35 @@
+#=============================#
+# Neural Network Truth Table  #
+#=============================#
+
+# Format (repeat for each test case):
+# <input_1> <input_2> <input_n> | <output_1> <output_2> <output_n>
+
+# if loading inputs/outputs from an external file, use the following format:
+# ?inputfile.bin | ?outputfile.bin
+
+?./ImageFiles/AtharvGoel/Training/11hand.bin | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/12hand.bin | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/14hand.bin | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/15hand.bin | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/16hand.bin | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/21hand.bin | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/22hand.bin | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/24hand.bin | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/25hand.bin | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/26hand.bin | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/31hand.bin | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/32hand.bin | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/34hand.bin | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/35hand.bin | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/36hand.bin | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/AtharvGoel/Training/41hand.bin | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/AtharvGoel/Training/42hand.bin | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/AtharvGoel/Training/44hand.bin | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/AtharvGoel/Training/45hand.bin | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/AtharvGoel/Training/46hand.bin | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/AtharvGoel/Training/51hand.bin | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/AtharvGoel/Training/52hand.bin | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/AtharvGoel/Training/54hand.bin | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/AtharvGoel/Training/55hand.bin | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/AtharvGoel/Training/56hand.bin | 0.0 0.0 0.0 0.0 1.0

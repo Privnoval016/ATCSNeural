@@ -1,0 +1,35 @@
+#=============================#
+# Neural Network Truth Table  #
+#=============================#
+
+# Format (repeat for each test case):
+# <input_1> <input_2> <input_n> | <output_1> <output_2> <output_n>
+
+# if loading inputs/outputs from an external file, use the following format:
+# ?inputfile.txt | ?outputfile.txt
+
+?./ImageFiles/DanielBoxo/1_test1.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/1_test2.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/1_test4.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/1_test5.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/1_test6.txt | 1.0 0.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/2_test1.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/2_test2.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/2_test4.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/2_test5.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/2_test6.txt | 0.0 1.0 0.0 0.0 0.0
+?./ImageFiles/DanielBoxo/3_test1.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/DanielBoxo/3_test2.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/DanielBoxo/3_test4.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/DanielBoxo/3_test5.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/DanielBoxo/3_test6.txt | 0.0 0.0 1.0 0.0 0.0
+?./ImageFiles/DanielBoxo/4_test1.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/DanielBoxo/4_test2.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/DanielBoxo/4_test4.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/DanielBoxo/4_test5.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/DanielBoxo/4_test6.txt | 0.0 0.0 0.0 1.0 0.0
+?./ImageFiles/DanielBoxo/5_test1.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/DanielBoxo/5_test2.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/DanielBoxo/5_test4.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/DanielBoxo/5_test5.txt | 0.0 0.0 0.0 0.0 1.0
+?./ImageFiles/DanielBoxo/5_test6.txt | 0.0 0.0 0.0 0.0 1.0

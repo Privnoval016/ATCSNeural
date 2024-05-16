@@ -1,0 +1,1 @@
+120x121 (14520 activations)

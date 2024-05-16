@@ -1,0 +1,1 @@
+69x100 (6900 activations)

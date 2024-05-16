@@ -50,9 +50,9 @@ namespace parser
    inline ifstream configStream;                   // the stream used to read from the config file
    inline ifstream truthTableStream;
 
-   inline bool isTraining, isLoading, isSaving;
+   inline bool isTraining, isLoading, isSaving, isPrintingInput;
    inline int actFunctIndex;                       // sigmoid = 0, tanh = 1, linear = 2
-   inline int keepAliveInterval, savingInterval, numTrainingSets;
+   inline int keepAliveInterval, savingInterval, numTrainingSets, precision;
 
    inline int numActLayers, numInAct, numOutAct;
    inline string layerConfigData;
@@ -155,6 +155,10 @@ namespace parser
  */
    inline void addParamToVars(string key, string value)
    {
+      if (key == "PRECISION")
+      {
+         precision = stoi(value);
+      }
       if (key == "ACT_LAYERS")
       {
          layerConfigData = value;
@@ -162,6 +166,10 @@ namespace parser
       else if (key == "RUN_MODE")
       {
          isTraining = stoi(value) == 1;
+      }
+      else if (key == "OUTPUT_MODE")
+      {
+         isPrintingInput = stoi(value) == 1;
       }
       else if (key == "ACT_FUNCT")
       {
@@ -378,8 +386,8 @@ namespace parser
    } // inline void saveWeightsToFile(DARRAY2D kjWeights, DARRAY2D jiWeights)
 
 /**
- * Loads the given array with the values from the specified external data file. The values are stored in the file as
- * follows: each value is separated by a space, and the values are stored in the order they are to be loaded into the
+ * Loads the given array with the values from the specified external .txt file. The values are stored in the file as
+ * follows: each value is separated by a \n, and the values are stored in the order they are to be loaded into the
  * array. The number of values to be loaded is specified by the numElements parameter. Comments and whitespace are
  * omitted from the file.
  *
@@ -387,7 +395,7 @@ namespace parser
  * @param numElements   the number of values to be loaded
  * @param outputArray   the array to store the values
  */
-   inline void loadArrayFromExternalDataFile(string filePath, int numElements, DARRAY1D outputArray)
+   inline void loadArrayFromExternalTXTFile(string filePath, int numElements, DARRAY1D outputArray)
    {
       int curElement;
       string extractedLine;
@@ -404,12 +412,46 @@ namespace parser
          throw invalid_argument("External data file could not be found. Please provide a valid file path.");
       }
 
-      extractedLine = getValidLine(dataStream);
+      for (curElement = 0; curElement < numElements; ++curElement)
+      {
+         extractedLine = getValidLine(dataStream);
+         outputArray[curElement] = stod(trim(extractedLine));
+      }
+
+      dataStream.close();
+
+      return;
+   }  // inline void loadFromExternalTXTFile(DARRAY1D outputArray, int numElements, string filePath)
+
+   /**
+ * Loads the given array with the values from the specified external .bin file. The values are stored in the file as
+ * follows: The values are stored in the order they are to be loaded into the array. The number of values to be loaded
+ * is specified by the numElements parameter.
+ *
+ * @param filePath      the path to the external data file
+ * @param numElements   the number of values to be loaded
+ * @param outputArray   the array to store the values
+ */
+   inline void loadArrayFromExternalBINFile(string filePath, int numElements, DARRAY1D outputArray)
+   {
+      int curElement;
+      string extractedLine;
+
+      if (filePath.empty())                      // checks if the file path is specified
+      {
+         throw invalid_argument("No external data file path specified. Please provide a valid file path.");
+      }
+
+      ifstream dataStream(filePath, ios::out | ios::binary);
+
+      if (!dataStream)                          // checks if the external data file exists
+      {
+         throw invalid_argument("External data file could not be found. Please provide a valid file path.");
+      }
 
       for (curElement = 0; curElement < numElements; ++curElement)
       {
-         outputArray[curElement] = stod(extractedLine.substr(0, extractedLine.find(VALUE_DELIMITER)));
-         extractedLine = extractedLine.substr(extractedLine.find(VALUE_DELIMITER) + 1, extractedLine.length() - 1);
+         dataStream.read(reinterpret_cast<char*>(&outputArray[curElement]), sizeof(outputArray[curElement]));
       }
 
       dataStream.close();
@@ -417,7 +459,8 @@ namespace parser
       return;
    }  // inline void loadFromExternalDataFile(DARRAY1D outputArray, int numElements, string filePath)
 
-/**
+
+   /**
  * Parses the given string to load the values into the given array. The values are stored in the string as follows: each
  * value is separated by a space, and the values are stored in the order they are to be loaded into the array. The number
  * of values to be loaded is specified by the numElements parameter. Comments and whitespace are omitted from the string.
@@ -440,7 +483,15 @@ namespace parser
       }  // if (values[0] != EXT_DATA_CHAR)
       else
       {
-         loadArrayFromExternalDataFile( values.substr(1, values.length() - 1), numElements, outputArray);
+         string dataFileName = values.substr(1, values.length() - 1);
+         if (dataFileName.substr(dataFileName.length() - 4, 4) == ".txt")
+         {
+            loadArrayFromExternalTXTFile(dataFileName, numElements, outputArray);
+         }
+         else
+         {
+            loadArrayFromExternalBINFile(dataFileName, numElements, outputArray);
+         }
       }
 
       return;
